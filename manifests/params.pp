@@ -135,7 +135,7 @@ class rabbitmq::params {
   $ldap_config_variables               = {}
   $wipe_db_on_cookie_change            = false
   $cluster_partition_handling          = 'ignore'
-  $environment_variables               = {}
+  $environment_variables               = { 'LC_ALL' => 'en_US.UTF-8' }
   $config_variables                    = {}
   $config_kernel_variables             = {}
   $config_management_variables         = {}
@@ -144,4 +144,6 @@ class rabbitmq::params {
   $ipv6                                = false
   $inetrc_config                       = 'rabbitmq/inetrc.erb'
   $inetrc_config_path                  = '/etc/rabbitmq/inetrc'
+  $archive_options                     = []
+  $loopback_users                      = ['guest']
 }

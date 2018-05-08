@@ -1,6 +1,6 @@
 {
   "name": "puppet-rabbitmq",
-  "version": "8.1.1-rc0",
+  "version": "8.2.3-rc0",
   "author": "voxpupuli",
   "summary": "Installs, configures, and manages RabbitMQ.",
   "license": "Apache-2.0",
@@ -36,6 +36,12 @@
       ]
     },
     {
+      "operatingsystem": "SLES",
+      "operatingsystemrelease": [
+        "11"
+      ]
+    },
+    {
       "operatingsystem": "FreeBSD"
     },
     {
@@ -48,7 +54,7 @@
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 4.7.1 < 6.0.0"
+      "version_requirement": ">= 4.10.0 < 6.0.0"
     }
   ],
   "dependencies": [

@@ -77,6 +77,7 @@ class rabbitmq::config {
   $inetrc_config                       = $rabbitmq::inetrc_config
   $inetrc_config_path                  = $rabbitmq::inetrc_config_path
   $ssl_erl_dist                        = $rabbitmq::ssl_erl_dist
+  $loopback_users                      = $rabbitmq::loopback_users
 
   if $ssl_only {
     $default_ssl_env_variables = {}
@@ -252,6 +253,27 @@ class rabbitmq::config {
         group   => '0',
         mode    => '0644',
         notify  => Class['Rabbitmq::Service'],
+      }
+    }
+    'Archlinux': {
+      file { '/etc/systemd/system/rabbitmq.service.d':
+        ensure                  => directory,
+        owner                   => '0',
+        group                   => '0',
+        mode                    => '0755',
+        selinux_ignore_defaults => true,
+      }
+      -> file { '/etc/systemd/system/rabbitmq.service.d/limits.conf':
+        content => template('rabbitmq/rabbitmq-server.service.d/limits.conf'),
+        owner   => '0',
+        group   => '0',
+        mode    => '0644',
+        notify  => Exec['rabbitmq-systemd-reload'],
+      }
+      exec { 'rabbitmq-systemd-reload':
+        command     => '/bin/systemctl daemon-reload',
+        notify      => Class['Rabbitmq::Service'],
+        refreshonly => true,
       }
     }
     default: {
