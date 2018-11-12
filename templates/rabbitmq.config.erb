@@ -154,11 +154,7 @@
 % Configure the LDAP authentication plugin
   {rabbitmq_auth_backend_ldap, [
     {other_bind, <%= @ldap_other_bind %>},
-<% if @ldap_server.class == Array or @ldap_server =~ /^\[/  -%>
-    {servers, <%= @ldap_server %>},
-<% else -%>
-    {servers, ["<%= @ldap_server %>"]},
-<% end -%>
+    {servers, [<%= @ldap_server.map { |v| "#{v}" }.join(', ') %>]},
 <% if @ldap_user_dn_pattern -%>
     {user_dn_pattern, "<%= @ldap_user_dn_pattern %>"},
 <%- end -%>
