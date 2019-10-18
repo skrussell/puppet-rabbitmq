@@ -13,13 +13,9 @@ class rabbitmq::repo::apt(
   Optional[String] $architecture = undef,
   ) {
 
-  $pin = $rabbitmq::package_apt_pin
-
-  # ordering / ensure to get the last version of repository
-  Class['rabbitmq::repo::apt']
-  -> Class['apt::update']
-
   $osname = downcase($facts['os']['name'])
+  $pin    = $rabbitmq::package_apt_pin
+
   apt::source { 'rabbitmq':
     ensure       => present,
     location     => "${location}/${osname}",
@@ -37,7 +33,7 @@ class rabbitmq::repo::apt(
     apt::pin { 'rabbitmq':
       packages => '*',
       priority => $pin,
-      origin   => 'packagecloud.io',
+      origin   => inline_template('<%= require \'uri\'; URI(@location).host %>'),
     }
   }
 }

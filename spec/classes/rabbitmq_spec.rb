@@ -1,18 +1,6 @@
 require 'spec_helper'
 
 describe 'rabbitmq' do
-  context 'on unsupported distributions' do
-    let(:facts) do
-      {
-        os: { family: 'Unsupported' }
-      }
-    end
-
-    it 'we fail' do
-      expect { catalogue }.to raise_error(Puppet::Error, %r{not supported on an Unsupported})
-    end
-  end
-
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       systemd_facts = os_specific_facts(facts)
@@ -1249,6 +1237,39 @@ describe 'rabbitmq' do
           is_expected.to contain_file('rabbitmq.config').with_content(%r{cacertfile, "/path/to/cacert"\},})
           is_expected.to contain_file('rabbitmq.config').with_content(%r{certfile, "/path/to/cert"\},})
           is_expected.to contain_file('rabbitmq.config').with_content(%r{keyfile, "/path/to/key"\}})
+        end
+      end
+
+      describe 'ssl admin options with dedicated admin-key and -certs' do
+        let(:params) do
+          { ssl: true,
+            ssl_management_port: 3141,
+            ssl_management_cacert: '/path/to/management_cacert',
+            ssl_management_cert: '/path/to/management_cert',
+            ssl_management_key: '/path/to/management_key',
+            admin_enable: true }
+        end
+
+        it 'sets rabbitmq_management ssl options to specified values' do
+          is_expected.to contain_file('rabbitmq.config').with_content(%r{rabbitmq_management, \[})
+          is_expected.to contain_file('rabbitmq.config').with_content(%r{listener, \[})
+          is_expected.to contain_file('rabbitmq.config').with_content(%r{port, 3141\},})
+          is_expected.to contain_file('rabbitmq.config').with_content(%r{ssl, true\},})
+          is_expected.to contain_file('rabbitmq.config').with_content(%r{ssl_opts, \[})
+          is_expected.to contain_file('rabbitmq.config').with_content(%r{cacertfile, "/path/to/management_cacert"\},})
+          is_expected.to contain_file('rabbitmq.config').with_content(%r{certfile, "/path/to/management_cert"\},})
+          is_expected.to contain_file('rabbitmq.config').with_content(%r{keyfile, "/path/to/management_key"\}})
+        end
+        it 'sets ssl options in the rabbitmqadmin.conf' do
+          is_expected.to contain_file('rabbitmqadmin.conf').with_content(
+            %r{ssl_ca_cert_file\s=\s/path/to/management_cacert}
+          )
+          is_expected.to contain_file('rabbitmqadmin.conf').with_content(
+            %r{ssl_cert_file\s=\s/path/to/management_cert}
+          )
+          is_expected.to contain_file('rabbitmqadmin.conf').with_content(
+            %r{ssl_key_file\s=\s/path/to/management_key}
+          )
         end
       end
 

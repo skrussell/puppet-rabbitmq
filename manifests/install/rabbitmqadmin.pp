@@ -10,7 +10,7 @@ class rabbitmq::install::rabbitmqadmin {
     }
   } else {
 
-    $python_package = $rabbitmq::params::python_package
+    $python_package = $rabbitmq::python_package
     # Some systems (e.g., Ubuntu 16.04) don't ship Python 2 by default
     if $rabbitmq::manage_python {
       ensure_packages([$python_package])
@@ -34,13 +34,10 @@ class rabbitmq::install::rabbitmqadmin {
 
     if !($management_ip_address) {
       # Pull from localhost if we don't have an explicit bind address
-      $curl_prefix = ''
       $sanitized_ip = '127.0.0.1'
     } elsif $management_ip_address =~ Stdlib::Compat::Ipv6 {
-      $curl_prefix  = "--noproxy ${management_ip_address} -g -6"
       $sanitized_ip = join(enclose_ipv6(any2array($management_ip_address)), ',')
     } else {
-      $curl_prefix  = "--noproxy ${management_ip_address}"
       $sanitized_ip = $management_ip_address
     }
 
