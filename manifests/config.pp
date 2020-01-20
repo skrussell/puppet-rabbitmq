@@ -212,30 +212,23 @@ class rabbitmq::config {
   case $facts['os']['family'] {
     'Debian': {
       file { '/etc/default/rabbitmq-server':
-        ensure  => file,
-        content => template('rabbitmq/default.erb'),
-        mode    => '0644',
-        owner   => '0',
-        group   => '0',
+        ensure  => 'absent'
       }
     }
     'RedHat': {
       file { '/etc/security/limits.d/rabbitmq-server.conf':
-        content => template('rabbitmq/limits.conf'),
-        owner   => '0',
-        group   => '0',
-        mode    => '0644',
+        ensure  => 'absent'
       }
     }
     default: { }
   }
 
-  if $facts['systemd'] { # systemd fact provided by systemd module
-    systemd::service_limits { "${service_name}.service":
-      limits          => {'LimitNOFILE' => $file_limit},
-      # The service will be notified when config changes
-      restart_service => false,
-    }
+  ulimit::rule { "increase_${service_name}_openfile_limits":
+    domain          => $rabbitmq_user,
+    service         => $service_name,
+    item            => 'nofile',
+    config          => { 'soft' => $file_limit, 'hard' => $file_limit },
+    systemd_seltype => 'rabbitmq_unit_file_t'
   }
 
   if $erlang_cookie == undef and $config_cluster {
