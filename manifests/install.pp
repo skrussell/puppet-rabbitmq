@@ -7,8 +7,9 @@ class rabbitmq::install {
   $rabbitmq_group   = $rabbitmq::rabbitmq_group
 
   package { $package_name:
-    ensure => $package_ensure,
-    notify => Class['rabbitmq::service'],
+    ensure          => $package_ensure,
+    install_options => $rabbitmq::install_options,
+    notify          => Class['rabbitmq::service'],
   }
 
   if $rabbitmq::environment_variables['MNESIA_BASE'] {

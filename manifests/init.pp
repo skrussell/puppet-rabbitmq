@@ -327,6 +327,7 @@ class rabbitmq (
   String $package_ensure                                                                           = 'installed',
   Optional[String] $package_gpg_key                                                                = undef,
   Variant[String, Array] $package_name                                                             = 'rabbitmq',
+  Optional[Array[String]] $install_options                                                         = undef,
   Optional[String] $package_source                                                                 = undef,
   Optional[String] $package_provider                                                               = undef,
   Boolean $repos_ensure                                                                            = false,
