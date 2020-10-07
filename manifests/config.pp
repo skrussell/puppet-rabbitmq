@@ -236,8 +236,14 @@ class rabbitmq::config {
     default: {}
   }
 
-  if ($file_limit != 0 and $facts['systemd']) { # systemd fact provided by systemd module
+  if $facts['systemd'] { # systemd fact provided by systemd module
+    if ($file_limit != 0) {
+      $svc_limit_ensure = 'present'
+    } else {
+      $svc_limit_ensure = 'absent'
+    }
     systemd::service_limits { "${service_name}.service":
+      ensure                  => $svc_limit_ensure,
       selinux_ignore_defaults => ($facts['os']['family'] == 'RedHat'),
       limits                  => { 'LimitNOFILE' => $file_limit },
       # The service will be notified when config changes
