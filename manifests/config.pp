@@ -208,10 +208,16 @@ class rabbitmq::config {
     }
   }
 
+  if ($file_limit != 0) {
+    $file_limit_ensure = 'file'
+  } else {
+    $file_limit_ensure = 'absent'
+  }
+
   case $facts['os']['family'] {
     'Debian': {
       file { '/etc/default/rabbitmq-server':
-        ensure  => file,
+        ensure  => $file_limit_ensure,
         content => template('rabbitmq/default.erb'),
         mode    => '0644',
         owner   => '0',
@@ -220,6 +226,7 @@ class rabbitmq::config {
     }
     'RedHat': {
       file { '/etc/security/limits.d/rabbitmq-server.conf':
+        ensure  => $file_limit_ensure,
         content => template('rabbitmq/limits.conf'),
         owner   => '0',
         group   => '0',
@@ -229,7 +236,7 @@ class rabbitmq::config {
     default: {}
   }
 
-  if $facts['systemd'] { # systemd fact provided by systemd module
+  if ($file_limit != 0 and $facts['systemd']) { # systemd fact provided by systemd module
     systemd::service_limits { "${service_name}.service":
       selinux_ignore_defaults => ($facts['os']['family'] == 'RedHat'),
       limits                  => { 'LimitNOFILE' => $file_limit },
