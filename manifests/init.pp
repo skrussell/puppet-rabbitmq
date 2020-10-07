@@ -398,6 +398,7 @@ class rabbitmq (
   Array $archive_options                                                                           = [],
   Array $loopback_users                                                                            = ['guest'],
   Boolean $service_restart                                                                         = true,
+  Boolean $with_camp2camp_systemd_module                                                           = true
 ) {
   if $ssl_only and ! $ssl {
     fail('$ssl_only => true requires that $ssl => true')

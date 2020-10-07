@@ -210,8 +210,10 @@ class rabbitmq::config {
 
   if ($file_limit != 0) {
     $file_limit_ensure = 'file'
+    $svc_limit_ensure  = 'present'
   } else {
     $file_limit_ensure = 'absent'
+    $svc_limit_ensure  = 'absent'
   }
 
   case $facts['os']['family'] {
@@ -236,12 +238,7 @@ class rabbitmq::config {
     default: {}
   }
 
-  if $facts['systemd'] { # systemd fact provided by systemd module
-    if ($file_limit != 0) {
-      $svc_limit_ensure = 'present'
-    } else {
-      $svc_limit_ensure = 'absent'
-    }
+  if ($rabbitmq::with_camp2camp_systemd_module and $facts['systemd']) { # systemd fact provided by systemd module
     systemd::service_limits { "${service_name}.service":
       ensure                  => $svc_limit_ensure,
       selinux_ignore_defaults => ($facts['os']['family'] == 'RedHat'),
