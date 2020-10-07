@@ -210,10 +210,8 @@ class rabbitmq::config {
 
   if ($file_limit != 0) {
     $file_limit_ensure = 'file'
-    $svc_limit_ensure  = 'present'
   } else {
     $file_limit_ensure = 'absent'
-    $svc_limit_ensure  = 'absent'
   }
 
   case $facts['os']['family'] {
@@ -236,16 +234,6 @@ class rabbitmq::config {
       }
     }
     default: {}
-  }
-
-  if $facts['systemd'] { # systemd fact provided by systemd module
-    systemd::service_limits { "${service_name}.service":
-      ensure                  => $svc_limit_ensure,
-      selinux_ignore_defaults => ($facts['os']['family'] == 'RedHat'),
-      limits                  => { 'LimitNOFILE' => $file_limit },
-      # The service will be notified when config changes
-      restart_service         => false,
-    }
   }
 
   if $erlang_cookie == undef and $config_cluster {
