@@ -23,7 +23,7 @@ class rabbitmq::service (
       name       => $service_name,
     }
 
-    if $facts['systemd'] and defined(Class['systemd::systemctl::daemon_reload']) {
+    if ($rabbitmq::with_camp2camp_systemd_module and $facts['systemd']) {
       Class['systemd::systemctl::daemon_reload'] -> Service['rabbitmq-server']
     }
   }
