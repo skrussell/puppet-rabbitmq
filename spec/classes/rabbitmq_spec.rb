@@ -600,7 +600,7 @@ describe 'rabbitmq' do
         let :params do
           { config_stomp: false,
             ldap_auth: true,
-            ldap_server: ['ldap1.example.com', 'ldap2.samknows.com'],
+            ldap_server: ['ldap1.example.com', 'ldap2.example.com'],
             ldap_other_bind: 'as_user',
             ldap_use_ssl: false,
             ldap_port: 389,
