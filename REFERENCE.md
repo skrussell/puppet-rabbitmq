@@ -435,9 +435,9 @@ Default value: `false`
 
 ##### `ldap_server`
 
-Data type: `String`
+Data type: `Variant[String[1],Array[String[1]]]`
 
-LDAP server to use for auth.
+LDAP server or servers to use for auth.
 
 Default value: 'ldap'
 
@@ -833,6 +833,33 @@ Functionality can be tested with cipherscan or similar tool: https://github.com/
 * OpenSSL style: `['ECDHE-RSA-AES256-SHA', 'DHE-RSA-AES256-SHA']`
 
 Default value: []
+
+##### `ssl_crl_check`
+
+Data type: `Enum['true','false','peer','best_effort']`
+
+Perform CRL (Certificate Revocation List) verification
+Please see the [Erlang SSL](https://erlang.org/doc/man/ssl.html#type-crl_check) module documentation for more information.
+
+Default value: 'false'
+
+##### `ssl_crl_cache_hash_dir`
+
+Data type: `Optional[Stdlib::Absolutepath]`
+
+This setting makes use of a directory where CRLs are stored in files named by the hash of the issuer name.
+Please see the [Erlang SSL](https://erlang.org/doc/man/ssl.html#type-crl_cache_opts) module documentation for more information.
+
+Default value: `undef`
+
+##### `ssl_crl_cache_http_timeout`
+
+Data type: `Optional[Integer]`
+
+This setting enables use of internal CRLs cache and sets HTTP timeout interval on fetching CRLs from distributino URLs defined inside certificate.
+Please see the [Erlang SSL](https://erlang.org/doc/man/ssl.html#type-crl_cache_opts) module documentation for more information.
+
+Default value: `undef`
 
 ##### `stomp_port`
 
@@ -1289,6 +1316,18 @@ rabbitmq_parameter { 'documentumFed@/':
       'expires' => '360000',
   },
 }
+rabbitmq_parameter { 'documentumShovelNoMunging@/':
+  component_name => '',
+  value          => {
+      'src-uri'    => 'amqp://',
+      'src-exchange'  => 'my-exchange',
+      'src-exchange-key' => '6',
+      'src-queue'  => 'my-queue',
+      'dest-uri'   => 'amqp://remote-server',
+      'dest-exchange' => 'another-exchange',
+  },
+  autoconvert   => false,
+}
 ```
 
 #### Properties
@@ -1322,6 +1361,14 @@ Valid values: %r{^\S+@\S+$}
 namevar
 
 combination of name@vhost to set parameter for
+
+##### `autoconvert`
+
+Valid values: `true`, `false`
+
+whether numeric strings from `value` should be converted to int automatically
+
+Default value: `true`
 
 ### rabbitmq_plugin
 
